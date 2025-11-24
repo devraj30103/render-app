@@ -1,24 +1,55 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, render_template_string
 
 app = Flask(__name__)
 
+# Simple in-memory list
 todos = []
+
+HTML_PAGE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple To-Do</title>
+</head>
+<body>
+    <h1>📝 Simple To-Do List</h1>
+
+    <form method="POST" action="/add">
+        <input type="text" name="task" placeholder="Enter task..." required>
+        <button type="submit">Add</button>
+    </form>
+
+    <h3>Tasks:</h3>
+    <ul>
+        {% for t in todos %}
+            <li>
+                {{ t }}
+                <a href="/delete/{{ loop.index0 }}">
+                    <button>Delete</button>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+"""
 
 @app.route("/")
 def home():
-    return "<h2>Simple To-Do List</h2><br>" + "<br>".join(todos)
+    return render_template_string(HTML_PAGE, todos=todos)
 
-@app.route("/add")
+@app.route("/add", methods=["POST"])
 def add():
-    task = request.args.get("task")
+    task = request.form.get("task")
     if task:
         todos.append(task)
-        return f"Added: {task}"
-    return "Please add task like /add?task=BuyMilk"
+    return redirect("/")
 
-@app.route("/list")
-def list_tasks():
-    return "<br>".join(todos)
+@app.route("/delete/<int:index>")
+def delete(index):
+    if 0 <= index < len(todos):
+        todos.pop(index)
+    return redirect("/")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
