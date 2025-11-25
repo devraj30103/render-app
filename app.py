@@ -12,7 +12,7 @@ HTML_PAGE = """
     <title>Simple To-Do</title>
 </head>
 <body>
-    <h1>📝 Simple To-Do List</h1>
+    <h1>To-Do List</h1>
 
     <form method="POST" action="/add">
         <input type="text" name="task" placeholder="Enter task..." required>
